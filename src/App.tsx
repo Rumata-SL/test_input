@@ -1,6 +1,5 @@
-import React, {ChangeEvent,useEffect, useState} from "react";
+import React, {ChangeEvent, useEffect, useState} from "react";
 import "./App.css";
-
 
 // 1. Починить инпуты;
 // 2. Имплементировать добавление и удаление инпутов;
@@ -8,7 +7,8 @@ import "./App.css";
 //    и в случае успеха в консоль нужно вывести веселый смайлик, а если хоть одно
 //    значение не проходит - грустный смайлик;
 
-
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const validate = (value: string) => sleep(2000).then(() => value === "bob");
 const HAPPY_EMOJI = "😊";
 const SAD_EMOJI = "😞";
 
@@ -18,8 +18,7 @@ type inputType = {
 export default function App() {
     let [arrValue, setArrValue] = useState<Array<string>>([])
     let [arrayInput, setArrayInput] = useState<Array<inputType>>([{value: ""}])
-    let [checkResult, setCheckResult]= useState(false)
-
+    
     const addInput = () => {
         setArrayInput([...arrayInput, {value: ""}])
     }
@@ -41,18 +40,19 @@ export default function App() {
         setArrayInput([...arrayInput.filter((el, index) => index === i ? arrayInput[i].value = e.target.value : el)])
     }
     useEffect(() => {
-        const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-        const validate = (value: string) => sleep(2000).then(() => value === "bob");
         const promises = arrValue.map(el => validate(el))
         const promise = Promise.all(promises)
         promise.then((res) => {
-            setCheckResult(res.every(elem => elem))
+            if(res.length){
+            res.every(elem => elem) ? console.log(HAPPY_EMOJI) : console.log(SAD_EMOJI)
+            }
+
         });
-    }, [arrayInput, arrValue])
+    }, [arrValue])
 
     const handleSubmit = () => {
         setArrValue(arrayInput.map(el => el.value))
-        checkResult ? console.log(HAPPY_EMOJI): console.log(SAD_EMOJI)
+
     };
 
     return (
